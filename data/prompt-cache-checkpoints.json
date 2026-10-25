@@ -1,0 +1,47 @@
+{
+  "id": "prompt-cache-checkpoints",
+  "title": "Prompt cache and context checkpoints of hybrid (Gated DeltaNet) Qwen models",
+  "date": "2026-10-23/24",
+  "setup": "Temporary router with copies of the production section; one slot (--parallel 1). Scenario: a simulated agent chat of 36-68 steps in which every request carries the whole history, then one short foreign request (like the title request of a new chat) that takes the only slot, then a return to the original chat plus one step. 'Return time' is the wall-clock time of that last request. The 'compaction summary' request imitates the one sent by an agent harness: same system prompt and same messages up to 78% of the chat plus a final instruction; only prompt processing is measured.",
+  "server_defaults": { "ctx_checkpoints": 32, "checkpoint_min_step_tokens": 8192, "cache_ram_mib": 8192 },
+  "per_model_state_sizes": {
+    "qwen3.6-35b-a3b": { "checkpoint_mib": 62.8, "prompt_state_mib_per_1000_tokens": 12.4, "mtp_draft_state_mib_at_161k_tokens": 319 },
+    "qwen3.8-27b": { "checkpoint_mib": 149.6, "prompt_state_mib_per_1000_tokens": 39, "state_mib_at_65.7k_tokens": 2592 }
+  },
+  "qwen36_return_to_chat": {
+    "chat_tokens": 161489,
+    "rows": [
+      { "cache_ram_mib": 8192, "checkpoints": 32, "saved_chat_mib": 4008.6, "foreign_request_s": 2.0, "return_s": 14.2, "tokens_processed_on_return": 2372 },
+      { "cache_ram_mib": 8192, "checkpoints": 4, "saved_chat_mib": 2312.6, "foreign_request_s": 1.4, "return_s": 13.9 },
+      { "cache_ram_mib": 4096, "checkpoints": 4, "saved_chat_mib": 2312.6, "foreign_request_s": 1.4, "return_s": 14.0 }
+    ]
+  },
+  "qwen36_compaction_summary_request": {
+    "chat_tokens": 161489,
+    "summary_prefix_tokens": 126230,
+    "rows": [
+      { "checkpoints": 32, "summary_s": 15.2, "tokens_processed": 3393 },
+      { "checkpoints": 12, "summary_s": 14.7, "tokens_processed": 3393 },
+      { "checkpoints": 8, "summary_s": 14.7, "tokens_processed": 3393 },
+      { "checkpoints": 4, "summary_s": 313, "tokens_processed": 126230, "note": "no checkpoint behind the summary prefix: full re-processing at ~400 tok/s" }
+    ],
+    "why": "Checkpoints are kept at least 8192 tokens apart and only the N most recent survive. The summary prefix ends ~37,000 tokens before the end of the chat (~4.5 spacings): with 8 checkpoints there is always one behind it; with 4 there is none."
+  },
+  "qwen38_return_to_chat": {
+    "chat_tokens": 65718,
+    "rows": [
+      { "cache_ram_mib": 4096, "checkpoints": 32, "outcome": "prompt state 7230 MiB exceeds the 4096 MiB cache limit: skipped", "return_s_lower_bound": 300, "return_s_estimated": [300, 420], "note": "the first attempt was cut by a 300 s client timeout; at 150-225 tok/s a full re-processing is 5-7 min" },
+      { "cache_ram_mib": 8192, "checkpoints": 8, "return_s": 13.6, "tokens_processed_on_return": 1785 },
+      { "cache_ram_mib": 4096, "checkpoints": 8, "return_s": 13.7, "note": "fits only up to ~70,000 tokens" }
+    ],
+    "state_growth": "about 39 MiB per 1,000 tokens: ~4.5 GiB at 85,000 tokens, ~6.4 GiB at 131,000 and ~11.5 GiB at 262,144 (with 8 checkpoints)"
+  },
+  "other_model_cross_check": {
+    "model": "Nemotron 3.5 Bolt (hybrid, no MTP)",
+    "chat_tokens": 173662,
+    "before": { "cache_ram_mib": 2048, "checkpoints": 32, "return_s_estimated": 520 },
+    "after": { "cache_ram_mib": 4096, "checkpoints": 8, "return_s": 14.1, "summary_s": 6.3 },
+    "production_check": { "chat_tokens": 103074, "return_s": 10.4, "summary_s": 25.7 }
+  },
+  "source": "Internal reports 23, 24, 28 (2026-10-23) and 35 (2026-10-24)."
+}

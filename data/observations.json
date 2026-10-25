@@ -1,0 +1,277 @@
+{
+  "id": "observations",
+  "title": "Single observations quoted in the text",
+  "date": "2026-10-23 .. 2026-10-25",
+  "setup": "Individual measurements that the documentation quotes in prose or in small tables and that are not part of the other data files. Each entry names the model and the situation. 'Internal report N' is the author's private measurement notebook (not published).",
+  "cold_start": {
+    "model": "Qwen3.6-35B-A3B, production router, mean generation speed of the four loads, same text and same draft acceptance in each run",
+    "unit": "tok/s",
+    "first_run_after_router_restart": 82,
+    "second_run": 112.6,
+    "third_run": 113.5,
+    "reading": "the first measurement after a restart is ~30 % slower: warm up and discard it",
+    "source": "Internal report 39 (2026-10-25), section 3."
+  },
+  "repeated_texts_inflate_copy": {
+    "unit": "tok/s",
+    "qwen36_finetune_same_architecture_copy": [
+      131,
+      168,
+      233
+    ],
+    "qwen36_finetune_draft_acceptance_pct": "81-91",
+    "qwen36_base_copy": [
+      118,
+      165,
+      148
+    ],
+    "note": "the first run of the base model is also the cold one. Probable cause: the n-gram pool that the server shares between requests (not verified).",
+    "source": "Internal report 39 (2026-10-25), section 3."
+  },
+  "memory_placement": {
+    "unit": "tok/s, mean generation of the four loads",
+    "temporary_router_qwen36_while_production_filled_the_dedicated_memory": 60.3,
+    "production_qwen36_before_the_change": 70.3,
+    "temporary_router_nemotron_vs_production": [
+      23.8,
+      26.6
+    ],
+    "later_temporary_router_qwen36_with_one_28_GB_model_resident": 115.3,
+    "later_production_qwen36_range": [
+      112.6,
+      121.6
+    ],
+    "note": "the cause (shared vs dedicated GPU memory) was inferred from the situation, not verified with a profiler.",
+    "source": "Internal reports 31 (2026-10-23), 39 and 42 (2026-10-25)."
+  },
+  "qwen36_cache_entry": {
+    "unit": "MiB",
+    "context_checkpoint": 62.8,
+    "prompt_state_per_1000_tokens": 12.4,
+    "mtp_draft_state_at_161500_tokens": 319.1,
+    "prompt_state_at_161500_tokens": 2061.4,
+    "saved_chat_161489_tokens_32_checkpoints": 4008.6,
+    "saved_chat_161489_tokens_4_checkpoints": 2312.6,
+    "return_to_chat_new_tokens_processed_default_cache": 2372,
+    "return_to_chat_seconds": {
+      "cache_ram_8192_ctxcp_32": 14.2,
+      "cache_ram_8192_ctxcp_4": 13.9,
+      "cache_ram_4096_ctxcp_4": 14
+    },
+    "whole_run": {
+      "prompt_tokens": 5629964,
+      "read_from_cache": 5470637,
+      "share_from_cache_pct": 97.2
+    },
+    "early_estimate_that_was_wrong": {
+      "checkpoint_mib_estimated": 188,
+      "checkpoint_mib_measured": 62.8
+    },
+    "source": "Internal report 24 (2026-10-23)."
+  },
+  "qwen38_cache": {
+    "unit": "MiB",
+    "context_checkpoint": 149.6,
+    "prompt_state_per_1000_tokens": 39,
+    "chat_65718_tokens": {
+      "state_with_32_checkpoints": 7230,
+      "state_with_8_checkpoints_part": 2592,
+      "cache_ram_4096_limit_exceeded_at_32_checkpoints": true
+    },
+    "return_to_chat_with_cache_ram_8192_ctxcp_8": {
+      "tokens_processed": 1785,
+      "prompt_tokens": 67499,
+      "seconds": 13.6
+    },
+    "source": "Internal report 35 (2026-10-24)."
+  },
+  "compaction_observed_in_agent_window": {
+    "model": "Qwen3.6-35B-A3B, production router, agent desktop window, compaction policy ratio 0.65 / headroom 8192 / retain",
+    "context_before_tokens": 199563,
+    "context_share_of_window_pct": 76,
+    "threshold_tokens": 170393,
+    "summary_request": {
+      "tokens_summarised": 155500,
+      "new_prompt_tokens": 397,
+      "prompt_seconds": 2,
+      "generated_tokens": 964,
+      "generation_seconds": 26.9,
+      "total_seconds": 29,
+      "thinking": "off"
+    },
+    "context_after_tokens": 52153,
+    "context_after_share_pct": 20,
+    "main_request_afterwards": {
+      "tokens_processed": 45385,
+      "seconds": 63,
+      "tok_s": 720,
+      "reason": "the prefix changed, so the retained 44,000-token message had to be read again"
+    },
+    "whole_turn": "1 min 47 s",
+    "source": "Internal report 33 (2026-10-24)."
+  },
+  "title_request": {
+    "description": "Time to generate a 5-word session title (max_completion_tokens 4096), default vs enable_thinking false",
+    "nemotron_3_5_bolt_seconds": {
+      "default": 37.9,
+      "thinking_off": 0.8
+    },
+    "qwen36_seconds": {
+      "default": 22.8,
+      "thinking_off": 0.5,
+      "default_generated_tokens": 1398
+    },
+    "source": "Internal report 25 (2026-10-23)."
+  },
+  "thinking_off_single_questions_qwen36": {
+    "description": "Same answers, enable_thinking false",
+    "seconds_default_vs_off": {
+      "trivial_question": [
+        3,
+        0.3
+      ],
+      "code_bug": [
+        6.3,
+        0.9
+      ],
+      "riddle": [
+        24.5,
+        8.1
+      ]
+    },
+    "source": "Internal report 25 (2026-10-23)."
+  },
+  "level_change_costs_no_cache": {
+    "description": "Tokens read from the cache after changing the thinking level in the middle of a chat (the whole previous context)",
+    "qwen36_tokens_from_cache": [
+      6905,
+      8000,
+      10910
+    ],
+    "nemotron_tokens_from_cache": [
+      6705
+    ],
+    "tokens_processed_per_message": "35-474",
+    "source": "Internal reports 25 and 32 (2026-10-23)."
+  },
+  "thinking_budget_alias_check": {
+    "description": "The same reasoning prompt with no thinking control, with thinking off, and with thinking_budget_tokens / reasoning_budget_tokens of 32, 512 and 2048. Shows that both field names cut the reasoning in this build (a 2048-token budget exceeds the 1,200-token generation cap, so those two runs end while still reasoning).",
+    "model": "Qwen3.6-35B-A3B, throwaway router started from configs/llama-server/models.example.ini",
+    "date": "2026-10-25",
+    "prompt": "Three boxes are labelled \"apples\", \"oranges\" and \"mixed\", and every label is wrong. You may take one fruit out of one box without looking inside. Work out which single box to pick from and what each box contains. Reason it through carefully before answering.",
+    "max_tokens": 1200,
+    "seed": 7,
+    "rows": [
+      {
+        "variant": "no control (server default budget)",
+        "reasoningChars": 4423,
+        "contentChars": 0,
+        "completionTokens": 1200,
+        "finish": "length",
+        "seconds": 19.2
+      },
+      {
+        "variant": "enable_thinking: false",
+        "reasoningChars": 0,
+        "contentChars": 3729,
+        "completionTokens": 947,
+        "finish": "stop",
+        "seconds": 13.2
+      },
+      {
+        "variant": "thinking_budget_tokens: 32",
+        "reasoningChars": 128,
+        "contentChars": 1399,
+        "completionTokens": 415,
+        "finish": "stop",
+        "seconds": 5.5
+      },
+      {
+        "variant": "reasoning_budget_tokens: 32 (alias)",
+        "reasoningChars": 128,
+        "contentChars": 1494,
+        "completionTokens": 409,
+        "finish": "stop",
+        "seconds": 5.9
+      },
+      {
+        "variant": "thinking_budget_tokens: 512",
+        "reasoningChars": 2009,
+        "contentChars": 2344,
+        "completionTokens": 1160,
+        "finish": "stop",
+        "seconds": 38.4
+      },
+      {
+        "variant": "reasoning_budget_tokens: 512 (alias)",
+        "reasoningChars": 1806,
+        "contentChars": 2122,
+        "completionTokens": 1069,
+        "finish": "stop",
+        "seconds": 21.2
+      },
+      {
+        "variant": "thinking_budget_tokens: 2048",
+        "reasoningChars": 4584,
+        "contentChars": 0,
+        "completionTokens": 1200,
+        "finish": "length",
+        "seconds": 50.9
+      },
+      {
+        "variant": "reasoning_budget_tokens: 2048 (alias)",
+        "reasoningChars": 4754,
+        "contentChars": 0,
+        "completionTokens": 1200,
+        "finish": "length",
+        "seconds": 39.3
+      }
+    ],
+    "source": "bench/thinking-check.mjs of this repository (one run per variant; the text is not bit-identical between runs because of speculative decoding)."
+  },
+  "thinking_check_qwen38": {
+    "description": "The same check on Qwen3.8-27B (reasoning_effort medium sent inside chat_template_kwargs; budgets of 512 only; a 1,000-token generation cap), and the answer of the server to reasoning_effort high.",
+    "model": "Qwen3.8-27B, throwaway router started from configs/llama-server/models.example.ini (the first request includes loading the model)",
+    "date": "2026-10-25",
+    "max_tokens": 1000,
+    "rows": [
+      {
+        "variant": "no control (server default budget)",
+        "reasoningChars": 2795,
+        "contentChars": 991,
+        "completionTokens": 1000,
+        "finish": "length",
+        "seconds": 90.4
+      },
+      {
+        "variant": "enable_thinking: false",
+        "reasoningChars": 0,
+        "contentChars": 3709,
+        "completionTokens": 1000,
+        "finish": "length",
+        "seconds": 70.3
+      },
+      {
+        "variant": "thinking_budget_tokens: 512",
+        "reasoningChars": 1655,
+        "contentChars": 1762,
+        "completionTokens": 896,
+        "finish": "stop",
+        "seconds": 43.7
+      },
+      {
+        "variant": "reasoning_budget_tokens: 512 (alias)",
+        "reasoningChars": 2012,
+        "contentChars": 1796,
+        "completionTokens": 1000,
+        "finish": "stop",
+        "seconds": 50.7
+      }
+    ],
+    "reasoning_effort_high": {
+      "http_status": 500,
+      "message": "Jinja Exception: Unexpected reasoning effort high. Supported types are xhigh (default), medium, and low."
+    },
+    "source": "bench/thinking-check.mjs --effort medium --budgets 512 --max-tokens 1000, and one curl with chat_template_kwargs.reasoning_effort = high."
+  }
+}

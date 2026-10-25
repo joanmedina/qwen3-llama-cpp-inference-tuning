@@ -1,0 +1,10 @@
+--- qwen3.6-chat-template.jinja (as embedded in the GGUF)
++++ qwen3.6-chat-template.patched.jinja
+@@ the loop over `messages`, branch for role == "system" @@
+     {%- if message.role == "system" %}
+         {%- if not loop.first %}
+-            {{- raise_exception('System message must be at the beginning.') }}
++            {#- agents (e.g. Codex) send system messages in the middle of a conversation: pass them through instead of failing #}
++            {{- '<|im_start|>system\n' + content + '<|im_end|>\n' }}
+         {%- endif %}
+     {%- elif message.role == "user" %}

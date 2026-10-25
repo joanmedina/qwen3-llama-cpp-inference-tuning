@@ -1,0 +1,19 @@
+name: Correction or question · Corrección o pregunta
+description: A mistake, a number that does not add up, an outdated option, or a question about the method · Un error, una cifra que no cuadra, una opción obsoleta o una duda sobre el método
+title: "[fix] "
+labels: ["documentation"]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where · Dónde
+      description: File and section, e.g. `docs/en/03-speculative-decoding.md` §4 · Fichero y sección
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What is wrong, or what would you like to know · Qué falla, o qué quieres saber
+      description: If you have a measurement that contradicts a number, give its setup (hardware, build, command) · Si una medida tuya contradice una cifra, indica su configuración
+    validations:
+      required: true

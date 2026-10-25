@@ -1,0 +1,62 @@
+name: Reproduction report · Informe de reproducción
+description: Share what you measured on your hardware, whether it agrees with this repository or not · Comparte lo que mediste en tu hardware, coincida o no
+title: "[repro] <hardware> · <backend> · <model>"
+labels: ["reproduction"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Results that **disagree** are as useful as those that agree. Please follow [CONTRIBUTING](../blob/main/CONTRIBUTING.md): no private prompts, no keys, one factor changed at a time.
+        *Gracias. Los resultados que **no coinciden** son tan útiles como los que sí. Sigue CONTRIBUTING: sin prompts privados, sin claves, un solo factor cada vez.*
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware, OS and driver · Hardware, SO y controlador
+      placeholder: "AMD Ryzen AI Max+ 395, 128 GB LPDDR5X, Windows 11, Adrenalin 25.x"
+    validations:
+      required: true
+  - type: input
+    id: backend
+    attributes:
+      label: Backend and llama.cpp build · Backend y versión de llama.cpp
+      placeholder: "Vulkan, build 11721 (ff5a23376)"
+    validations:
+      required: true
+  - type: input
+    id: gguf
+    attributes:
+      label: Model file · Fichero del modelo
+      description: Repository, quantisation, and whether `node tools/gguf-header.mjs` shows `nextn` tensors · Repositorio, cuantización y si `tools/gguf-header.mjs` muestra tensores `nextn`
+      placeholder: "bartowski/Qwen_Qwen3.6-35B-A3B-GGUF Q4_K_M, nextn: yes"
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command line or preset · Línea de comandos o preset
+      description: The exact options, and the ONE option that differs between variants · Las opciones exactas y la ÚNICA que cambia entre variantes
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Results · Resultados
+      description: Paste the table printed by `bench/spec-bench.mjs` or `bench/cache-bench.mjs` · Pega la tabla que imprimen los scripts de `bench/`
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: noise
+    attributes:
+      label: Noise and caveats · Ruido y salvedades
+      description: How much did two identical passes differ? Anything else running? · ¿Cuánto difieren dos pasadas idénticas? ¿Había algo más en marcha?
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I removed prompts, outputs, keys and paths that I do not want to publish · He quitado prompts, salidas, claves y rutas que no quiero publicar
+          required: true
+        - label: I discarded the first (cold) run and did not run other clients meanwhile · He descartado la primera pasada (en frío) y no había otros clientes
+          required: false

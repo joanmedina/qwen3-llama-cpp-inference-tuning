@@ -1,0 +1,44 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "llamacpp/qwen3.6",
+  "provider": {
+    "llamacpp": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "llama.cpp (local router)",
+      "options": {
+        "baseURL": "http://127.0.0.1:8080/v1",
+        "apiKey": "<the --api-key you gave llama-server>"
+      },
+      "models": {
+        "qwen3.6": {
+          "name": "Qwen3.6 35B-A3B (llama-server)",
+          "limit": { "context": 262144, "output": 32768 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "options": { "temperature": 0.6, "top_p": 0.95, "top_k": 20, "min_p": 0, "presence_penalty": 0 },
+          "variants": {
+            "low": { "reasoning_budget_tokens": 512 },
+            "medium": { "reasoning_budget_tokens": 2048 },
+            "high": { "reasoning_budget_tokens": 8192 }
+          }
+        },
+        "qwen3.6-no-thinking": {
+          "name": "Qwen3.6 35B-A3B, thinking off (titles, summaries, trivial questions)",
+          "limit": { "context": 262144, "output": 32768 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "options": { "temperature": 0.7, "top_p": 0.8, "top_k": 20, "min_p": 0, "presence_penalty": 0, "chat_template_kwargs": { "enable_thinking": false } }
+        },
+        "qwen3.8-27b": {
+          "name": "Qwen3.8 27B (llama-server, heavy tasks)",
+          "limit": { "context": 131072, "output": 32768 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "options": { "temperature": 1, "top_p": 0.95, "top_k": 20, "min_p": 0, "presence_penalty": 0 },
+          "variants": {
+            "low": { "reasoning_effort": "low" },
+            "medium": { "reasoning_effort": "medium" },
+            "high": { "reasoning_effort": "xhigh" }
+          }
+        }
+      }
+    }
+  }
+}

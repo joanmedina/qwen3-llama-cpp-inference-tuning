@@ -1,0 +1,32 @@
+{
+  "description": "How a four-level thinking selector (Off / Low / Medium / High) of a coding-agent client maps to what the llama-server chat templates of Qwen3.6 and Qwen3.8 understand. Each value is the set of fields to ADD to the body of POST /v1/chat/completions. See docs/en/05-thinking-budgets.md.",
+  "verified": "llama.cpp build 11721; Qwen3.6-35B-A3B and Qwen3.8-27B (Q4_K_M); 2026-10-23 .. 2026-10-25",
+  "budgets_tokens": { "low": 512, "medium": 2048, "high": 8192 },
+  "notes": [
+    "enable_thinking=false makes the template render an empty <think></think>: no thinking at all. Sending nothing is NOT 'off': the server then thinks up to its --reasoning-budget (8192 here).",
+    "thinking_budget_tokens (alias reasoning_budget_tokens) is a per-request cap on thinking tokens. A ceiling, not a target.",
+    "The Qwen3.8 template only accepts reasoning_effort in {xhigh (default), medium, low}. Any other value, including 'high', raises an exception and the server answers HTTP 500.",
+    "The Qwen3.6 template has no reasoning_effort: do not rely on it.",
+    "preserve_thinking=true keeps earlier reasoning in the history, which keeps the prompt prefix stable (95-98 % of prompt tokens served from the cache)."
+  ],
+  "models": {
+    "qwen3.6": {
+      "off": { "chat_template_kwargs": { "enable_thinking": false, "preserve_thinking": true } },
+      "low": { "chat_template_kwargs": { "enable_thinking": true, "preserve_thinking": true }, "thinking_budget_tokens": 512 },
+      "medium": { "chat_template_kwargs": { "enable_thinking": true, "preserve_thinking": true }, "thinking_budget_tokens": 2048 },
+      "high": { "chat_template_kwargs": { "enable_thinking": true, "preserve_thinking": true }, "thinking_budget_tokens": 8192 }
+    },
+    "qwen3.8-27b": {
+      "off": { "chat_template_kwargs": { "enable_thinking": false, "preserve_thinking": true } },
+      "low": { "chat_template_kwargs": { "enable_thinking": true, "reasoning_effort": "low", "preserve_thinking": true }, "thinking_budget_tokens": 512 },
+      "medium": { "chat_template_kwargs": { "enable_thinking": true, "reasoning_effort": "medium", "preserve_thinking": true }, "thinking_budget_tokens": 2048 },
+      "high": { "chat_template_kwargs": { "enable_thinking": true, "reasoning_effort": "xhigh", "preserve_thinking": true }, "thinking_budget_tokens": 8192 }
+    }
+  },
+  "recommended_defaults": {
+    "general_agent_work": "medium",
+    "quick_edits_and_simple_questions": "low",
+    "titles_summaries_trivial_queries": "off",
+    "hard_problems": "high (on purpose)"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "thinking-budget-levels",
+  "title": "Thinking levels: accuracy vs time for Qwen3.6-35B-A3B",
+  "date": "2026-10-23",
+  "setup": "Router with the production section of Qwen3.6. 10 'easy' and 8 'hard' problems with a single checkable answer (multi-step arithmetic, logic, what a code snippet prints, a bug, a SQL query, schedules, counting, probability); one run per setting, fixed seed, hard cap of 4,500 generated tokens; only the final content is graded. Levels: off = chat_template_kwargs {enable_thinking:false}; low/medium/high = enable_thinking:true + thinking_budget_tokens 512/2048/8192; base = no control (server default budget 8192).",
+  "levels": ["base", "off", "low", "medium", "high"],
+  "easy_10": {
+    "correct": { "base": 10, "off": 4, "low": 10, "medium": 10, "high": 9 },
+    "mean_time_s": { "base": 15.7, "off": 0.4, "low": 7.8, "medium": 16.8, "high": 20.5 },
+    "mean_tokens": { "base": 921, "off": 4, "low": 475, "medium": 1003, "high": 1188 },
+    "note": "High: one problem (change-making) thought 81 s and was cut at 4,500 tokens without answering."
+  },
+  "hard_8": {
+    "correct": { "off": 4, "low": 4, "medium": 7, "high": 7 },
+    "mean_time_s": { "off": 1.4, "low": 9.7, "medium": 28.6, "high": 39.0 },
+    "mean_tokens": { "off": 69, "low": 591, "medium": 1740, "high": 2379 },
+    "note": "High: its single failure was a reasoning run cut at 4,500 tokens."
+  },
+  "with_repeat_penalty_1_0": {
+    "easy_10_correct_all_levels": 10,
+    "hard_8_correct": { "low": 4, "medium": 7, "high": 7 },
+    "hard_8_medium_time_s": 25.1,
+    "time_change_pct": "-5 to -12",
+    "max_repetition_measure": 0.11
+  },
+  "title_request": {
+    "description": "Time to generate a 5-word session title (agent harness title request: max_completion_tokens 4096, no thinking control).",
+    "default_s": 22.8, "default_tokens": 1398, "enable_thinking_false_s": 0.5
+  },
+  "single_questions": {
+    "trivial_question_s": { "base": 3.0, "off": 0.3 },
+    "code_bug_s": { "base": 6.3, "off": 0.9 },
+    "riddle_s": { "base": 24.5, "off": 8.1 }
+  },
+  "qwen38_notes": {
+    "template_reasoning_effort": "xhigh (default) | medium | low; any other value raises an exception -> HTTP 500 ('Unexpected reasoning effort high. Supported types are xhigh (default), medium, and low')",
+    "mapping": "client 'high' -> reasoning_effort xhigh; client off -> enable_thinking:false"
+  },
+  "source": "Internal report 25 (2026-10-23) and its quality-vs-speed batteries."
+}

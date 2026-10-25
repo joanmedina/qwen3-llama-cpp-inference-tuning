@@ -1,0 +1,51 @@
+{
+  "id": "qwen36-ngram-mod-repeat-penalty",
+  "title": "Qwen3.6-35B-A3B: ngram-mod self-speculation on top of MTP, and repeat-penalty 1.0",
+  "date": "2026-10-23",
+  "setup": "Temporary router, same conditions as qwen36-mtp-draft-length.json. 'edit-tool' is a realistic agent load: one call to an `edit` tool whose old_string is copied from the context and whose new_string contains the change. Three code fragments, 1 seed. All variants keep `spec-draft-n-max 2`.",
+  "unit": "tokens/s of generation",
+  "ngram_parameters": "spec-ngram-mod-n-match / -n-min / -n-max; server defaults are 24 / 48 / 64",
+  "tuning_table": {
+    "loads": ["mean", "edit_tool", "copy", "edit", "reasoning"],
+    "variants": [
+      { "id": "today", "label": "MTP 2 (starting point)", "values": [60.3, 62.0, 61.4, 62.7, 55.1] },
+      { "id": "ngram-default", "label": "MTP 2 + ngram-mod (defaults)", "values": [95.3, 81.4, 130.6, 113.8, 55.4] },
+      { "id": "ngram-16-16-64", "label": "MTP 2 + ngram-mod 16/16/64", "values": [95.4, 87.8, 124.7, 114.2, 54.9] },
+      { "id": "ngram-12-12-32", "label": "MTP 2 + ngram-mod 12/12/32 (server warns: n_match too small)", "values": [88.5, 73.8, 120.3, 104.7, 55.1] },
+      { "id": "ngram-32-32-64", "label": "MTP 2 + ngram-mod 32/32/64", "values": [89.2, 78.4, 129.4, 94.0, 55.0] },
+      { "id": "mtp3-ngram-default", "label": "MTP 3 + ngram-mod (defaults)", "values": [93.8, 80.7, 127.3, 112.5, 54.9] },
+      { "id": "ngram-only", "label": "ngram-mod only, no MTP", "values": [82.4, 71.3, 127.4, 81.4, 49.4] },
+      { "id": "ngram-default-rp1", "label": "MTP 2 + ngram-mod (defaults) + repeat-penalty 1.0", "values": [104.9, 76.8, 149.8, 131.0, 61.8] },
+      { "id": "rp1-only", "label": "MTP 2 + repeat-penalty 1.0 only", "values": [65.6, 66.1, 66.5, 68.2, 61.7] }
+    ]
+  },
+  "replication_table": {
+    "description": "Replication with 3 fragments x 3 seeds (9 requests per variant and load); only edit-tool and edit.",
+    "loads": ["edit_tool", "edit", "mean"],
+    "variants": [
+      { "id": "today", "label": "MTP 2 (starting point)", "values": [59.1, 61.9, 60.5], "acceptance_edit_tool": 0.84, "acceptance_edit": 0.87 },
+      { "id": "ngram-default", "label": "+ ngram-mod (defaults)", "values": [79.3, 103.5, 91.4] },
+      { "id": "ngram-16-16-64", "label": "+ ngram-mod 16/16/64", "values": [80.0, 104.3, 92.2] },
+      { "id": "ngram-16-8-64", "label": "+ ngram-mod 16/8/64", "values": [81.0, 104.1, 92.5] },
+      { "id": "ngram-20-20-96", "label": "+ ngram-mod 20/20/96", "values": [83.2, 96.0, 89.6] },
+      { "id": "ngram-16-16-64-rp1", "label": "+ ngram-mod 16/16/64 + repeat-penalty 1.0", "values": [79.5, 122.2, 100.8] },
+      { "id": "ngram-default-rp1", "label": "+ ngram-mod (defaults) + repeat-penalty 1.0", "values": [81.8, 131.9, 106.8] }
+    ]
+  },
+  "repeat_penalty_alone": {
+    "description": "Quick batch (copy, edit, reasoning), 1 seed: repeat-penalty 1.1 (starting point) vs 1.0.",
+    "loads": ["mean", "copy", "edit", "reasoning"],
+    "rp1_1": [59.3, 61.1, 62.1, 54.8],
+    "rp1_0": [64.9, 66.0, 67.5, 61.2],
+    "gain_pct": { "mean": 9, "reasoning": 12 }
+  },
+  "no_effect": [
+    "CPU threads (2/4/8/16) and busy-poll: within +-3% noise",
+    "batch/ubatch other than 2048/1024: ubatch 2048 is 23-28% slower at prompt processing",
+    "KV cache type f16 vs q8_0: same speed (q8_0 uses half the memory)",
+    "--backend-sampling: 60.0 vs 59.7 tok/s (no effect)",
+    "ngram-map-k: 57.7 vs 59.3 tok/s mean (quick batch of copy, edit, reasoning): no gain over MTP alone",
+    "probabilistic draft sampling and draft-p-min: +2-8% on copy/edit, losses on reasoning"
+  ],
+  "source": "Internal report 29 (2026-10-23), sections 'ngram, repeat-penalty' and 'tuning of the n-gram and the edit tool call'."
+}

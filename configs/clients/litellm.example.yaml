@@ -1,0 +1,58 @@
+# LiteLLM proxy in front of the llama-server router: one alias per (model, thinking level) so that every other tool can pick a behaviour by name.
+#   litellm --config litellm.example.yaml --port 4000
+# The router is addressed with its OpenAI-compatible endpoint; the model id is the section name of the preset.
+# The thinking controls are sent through extra_body (see docs/en/05-thinking-budgets.md and thinking-levels.json).
+model_list:
+  - model_name: local-qwen36            # general agent work: Medium
+    litellm_params:
+      model: openai/qwen3.6
+      api_base: http://127.0.0.1:8080/v1
+      api_key: "os.environ/LLAMA_API_KEY"
+      extra_body:
+        chat_template_kwargs: { enable_thinking: true, preserve_thinking: true }
+        thinking_budget_tokens: 2048
+
+  - model_name: local-qwen36-fast       # quick edits, simple questions: Low
+    litellm_params:
+      model: openai/qwen3.6
+      api_base: http://127.0.0.1:8080/v1
+      api_key: "os.environ/LLAMA_API_KEY"
+      extra_body:
+        chat_template_kwargs: { enable_thinking: true, preserve_thinking: true }
+        thinking_budget_tokens: 512
+
+  - model_name: local-qwen36-no-thinking   # titles, summaries, trivial questions: Off
+    litellm_params:
+      model: openai/qwen3.6
+      api_base: http://127.0.0.1:8080/v1
+      api_key: "os.environ/LLAMA_API_KEY"
+      temperature: 0.7
+      top_p: 0.8
+      extra_body:
+        chat_template_kwargs: { enable_thinking: false, preserve_thinking: true }
+
+  - model_name: local-qwen38            # heavy / complex tasks. reasoning_effort must be xhigh|medium|low (never "high")
+    litellm_params:
+      model: openai/qwen3.8-27b
+      api_base: http://127.0.0.1:8080/v1
+      api_key: "os.environ/LLAMA_API_KEY"
+      temperature: 1.0
+      top_p: 0.95
+      extra_body:
+        chat_template_kwargs: { enable_thinking: true, reasoning_effort: medium, preserve_thinking: true }
+        thinking_budget_tokens: 2048
+
+  - model_name: local-qwen38-hard
+    litellm_params:
+      model: openai/qwen3.8-27b
+      api_base: http://127.0.0.1:8080/v1
+      api_key: "os.environ/LLAMA_API_KEY"
+      temperature: 1.0
+      top_p: 0.95
+      extra_body:
+        chat_template_kwargs: { enable_thinking: true, reasoning_effort: xhigh, preserve_thinking: true }
+        thinking_budget_tokens: 8192
+
+litellm_settings:
+  drop_params: true
+  request_timeout: 1800        # a cold model load plus a long prompt can take minutes

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-labelledby="t d" font-family='-apple-system, "Segoe UI", Helvetica, Arial, sans-serif'>
+<title id="t">Qwen3.6 &amp; Qwen3.8 on llama.cpp: faster local inference</title><desc id="d">MTP and n-gram speculative decoding, prompt-cache tuning and thinking budgets on an AMD Ryzen AI Max+ 395 (Strix Halo)</desc>
+<rect width="1280" height="640" fill="#ffffff"/><rect width="1280" height="12" fill="#0969da"/>
+<text x="60" y="78" font-size="24" font-weight="600" fill="#0969da">llama.cpp  ·  Vulkan  ·  AMD Ryzen AI Max+ 395 (Strix Halo)</text>
+<text x="60" y="160" font-size="60" font-weight="800" fill="#1f2328">Qwen3.6 &amp; Qwen3.8 on llama.cpp</text>
+<text x="60" y="214" font-size="30" fill="#1f2328">MTP + n-gram speculative decoding</text>
+<text x="60" y="256" font-size="30" fill="#1f2328">Prompt-cache checkpoints · 262K context · thinking budgets</text>
+<text x="60" y="304" font-size="20" fill="#57606a">Measured on one machine, with the data, the scripts and the configurations to repeat it</text>
+<rect x="60" y="330" width="368" height="190" rx="14" fill="#f6f8fa" stroke="#d0d7de"/><text x="244" y="423" font-size="68" font-weight="800" text-anchor="middle" fill="#1a7f37">+73 %</text><text x="244" y="466" font-size="22" font-weight="600" text-anchor="middle" fill="#1f2328">Qwen3.6-35B-A3B generation</text><text x="244" y="496" font-size="18" text-anchor="middle" fill="#57606a">70.3 → 121.6 tok/s</text>
+<rect x="456" y="330" width="368" height="190" rx="14" fill="#f6f8fa" stroke="#d0d7de"/><text x="640" y="423" font-size="68" font-weight="800" text-anchor="middle" fill="#1a7f37">×4.5</text><text x="640" y="466" font-size="22" font-weight="600" text-anchor="middle" fill="#1f2328">Qwen3.8-27B generation</text><text x="640" y="496" font-size="18" text-anchor="middle" fill="#57606a">12.6 → 56.9 tok/s</text>
+<rect x="852" y="330" width="368" height="190" rx="14" fill="#f6f8fa" stroke="#d0d7de"/><text x="1036" y="423" font-size="68" font-weight="800" text-anchor="middle" fill="#1a7f37">−95 %</text><text x="1036" y="466" font-size="22" font-weight="600" text-anchor="middle" fill="#1f2328">Context-compaction time</text><text x="1036" y="496" font-size="18" text-anchor="middle" fill="#57606a">313 s → 14.7 s</text>
+<text x="60" y="590" font-size="22" fill="#57606a">Configs · benchmarks · charts · raw data  —  English / Español  —  MIT</text>
+</svg>

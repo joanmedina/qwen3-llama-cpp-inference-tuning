@@ -1,0 +1,26 @@
+{
+  "id": "qwen36-production-before-after",
+  "title": "Qwen3.6-35B-A3B: generation speed in the real server, before and after the tuning",
+  "date": "2026-10-23",
+  "setup": "Same four loads sent directly to the production router (:8080) before and after the configuration change and one router restart. Weights in the GPU's dedicated memory. 3 code fragments, 1 seed.",
+  "unit": "tokens/s of generation",
+  "loads": ["mean", "edit_tool", "copy", "edit", "reasoning"],
+  "before": [70.3, 73.0, 69.2, 74.0, 64.9],
+  "after": [121.6, 89.7, 173.7, 148.8, 74.3],
+  "gain_pct": { "mean": 73, "edit_tool": 23, "copy": 151, "edit": 101, "reasoning": 14 },
+  "changes": [
+    "spec-type: draft-mtp -> draft-mtp,ngram-mod",
+    "repeat-penalty: 1.1 -> 1.0"
+  ],
+  "later_warm_measurements": {
+    "note": "On 2026-10-25, warm, same loads: 112.6 and 113.5 tok/s on two runs (121.6 on 2026-10-23); the first measurement after a router restart was 82.0 tok/s (cold machine).",
+    "values": [82.0, 112.6, 113.5]
+  },
+  "other_model_cross_check": {
+    "model": "Nemotron 3.5 Bolt (no MTP head; ngram-mod only)",
+    "before": [26.6, 26.5, 26.2, 26.5, 27.2],
+    "after": [44.3, 31.7, 61.2, 57.8, 26.7],
+    "note": "Same loads. Shows that ngram-mod works without an MTP head; reasoning is unchanged (-2%)."
+  },
+  "source": "Internal report 31 (2026-10-23) and report 39 (2026-10-25)."
+}

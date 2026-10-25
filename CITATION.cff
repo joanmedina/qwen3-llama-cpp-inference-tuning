@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use these configurations, measurements or scripts, please cite them as below, and cite the commit you used: the llama.cpp options and defaults they describe change between builds."
+title: "Tuning Qwen3.6-35B-A3B and Qwen3.8-27B on llama.cpp: MTP and n-gram speculative decoding, prompt-cache checkpoints and thinking budgets on an AMD Ryzen AI Max+ 395 (Strix Halo)"
+abstract: "Reproducible tuning guide, measurements and scripts for running the hybrid (Gated DeltaNet) models Qwen3.6-35B-A3B and Qwen3.8-27B with llama.cpp on an AMD Ryzen AI Max+ 395 mini PC (Vulkan, 128 GB unified memory). Combining the model's multi-token-prediction head with n-gram self-speculation (--spec-type draft-mtp,ngram-mod) raised generation from 70.3 to 121.6 tok/s (+73 %) on Qwen3.6 in production and from 12.6 to about 58 tok/s on Qwen3.8. Sizing the RAM prompt cache and the context checkpoints cut the return to a long chat from more than 5 minutes to 14 seconds. Mapping thinking levels to what the chat templates understand turned the selector into a real control. Includes configurations, benchmarks, data and figures in English and Spanish."
+type: software
+authors:
+  - family-names: Medina
+    given-names: Joan
+repository-code: "https://github.com/joanmedina/qwen3-llama-cpp-inference-tuning"
+url: "https://github.com/joanmedina/qwen3-llama-cpp-inference-tuning"
+license: MIT
+version: 1.0.0
+date-released: 2026-10-25
+keywords:
+  - llama.cpp
+  - Qwen3.6
+  - Qwen3.8
+  - speculative decoding
+  - multi-token prediction
+  - n-gram
+  - prompt caching
+  - context checkpoints
+  - Vulkan
+  - Strix Halo
+  - local LLM inference
+  - benchmark

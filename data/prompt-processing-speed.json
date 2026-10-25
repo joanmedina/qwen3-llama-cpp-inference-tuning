@@ -1,0 +1,39 @@
+{
+  "id": "prompt-processing-speed",
+  "title": "Prompt processing (prefill) speed",
+  "date": "2026-10-23/25",
+  "unit": "tokens/s of prompt processing (server timings.prompt_per_second)",
+  "qwen36_batch_ubatch": {
+    "setup": "Four requests with real code: 8,000 new tokens; 32,000 new tokens; generate 260 tokens with 32,000 tokens already cached; add 8,000 tokens over those 32,000. Temporary router, shared GPU memory.",
+    "columns": ["new_8k", "new_32k", "plus_8k_on_32k", "generate_at_32k_tok_s"],
+    "rows": [
+      { "id": "b2048-ub1024-q8", "label": "batch 2048, ubatch 1024, KV q8_0 (chosen)", "values": [875, 703, 517, 39.8] },
+      { "id": "ub512", "label": "ubatch 512", "values": [894, 680, 486, 38.5] },
+      { "id": "b2048-ub2048", "label": "batch 2048, ubatch 2048", "values": [631, 538, 433, 38.5] },
+      { "id": "b4096-ub2048", "label": "batch 4096, ubatch 2048", "values": [632, 542, 437, 38.6] },
+      { "id": "kv-f16", "label": "KV cache f16 (instead of q8_0)", "values": [870, 700, 513, 39.8] }
+    ]
+  },
+  "qwen36_vs_context_depth": {
+    "setup": "Filling a 262,144-token window with four large messages (documents), each processed on top of the previous context; speed is the server's average for the new chunk. Production router.",
+    "points": [
+      { "new_tokens": 42908, "context_after": 48971, "tok_s": 720 },
+      { "new_tokens": 51663, "context_after": 100679, "tok_s": 383 },
+      { "new_tokens": 54797, "context_after": 155498, "tok_s": 259 },
+      { "new_tokens": 44043, "context_after": 199563, "tok_s": 196 }
+    ]
+  },
+  "qwen38_vs_context_depth": {
+    "setup": "From the server log of the cache test (76 requests of >= 1,500 tokens).",
+    "points": [
+      { "context_range": "2-30K", "context_mid": 16000, "tok_s": 225 },
+      { "context_range": "45-65K", "context_mid": 55000, "tok_s": 149 }
+    ],
+    "median_tok_s": 186
+  },
+  "production_warm_8k_32k": {
+    "qwen3.6": { "new_8k": 1122, "new_32k": 910 },
+    "note": "Warm, production router, dedicated memory (2026-10-25). Temporary routers with shared memory give ~700-960 tok/s at 8K."
+  },
+  "source": "Internal reports 29 (2026-10-23), 33 (2026-10-23), 35 (2026-10-24), 39 (2026-10-25)."
+}

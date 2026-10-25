@@ -1,0 +1,42 @@
+# Provider block of the coding-agent harness used in this work (DSH, plugin `llm-pi-ai`), reduced to the fields that matter for this repository.
+# Other harnesses name these things differently; the three ideas are the same:
+#   1. contextWindow            = the REAL per-slot context of the server (docs/en/04-prompt-cache-context-compaction.md, section 6)
+#   2. thinking-level mapping   = what each menu entry sends (docs/en/05-thinking-budgets.md, section 2)
+#   3. thinkingBudgets          = the token cap each level sends
+providers:
+  local-llama:
+    api: openai-completions
+    baseURL: http://127.0.0.1:8080/v1
+    apiKeyEnv: LLAMA_API_KEY
+    models:
+      - id: qwen3.6
+        name: qwen3.6
+        contextWindow: 262144          # preset: ctx-size = 262144, parallel = 1
+        input: [text, image]
+        reasoningEfforts: { off: null, low: low, medium: medium, high: high }
+        compat:
+          supportsThinkingTokenBudget: true
+          thinkingTokenBudgetField: thinking_budget_tokens
+          thinkingFormat: qwen-chat-template      # sends enable_thinking (true/false) and preserve_thinking: true
+      - id: qwen3.8-27b
+        name: qwen3.8-27b
+        contextWindow: 131072          # preset: ctx-size = 131072 (NOT 262144: declaring more means the client never compacts)
+        input: [text, image]
+        reasoningEfforts: { off: null, low: low, medium: medium, high: xhigh }   # high -> xhigh, or HTTP 500
+        compat:
+          supportsThinkingTokenBudget: true
+          thinkingTokenBudgetField: thinking_budget_tokens
+          thinkingFormat: chat-template
+          chatTemplateKwargs:
+            enable_thinking: { $var: thinking.enabled }
+            reasoning_effort: { $var: thinking.effort, omitWhenOff: true }
+            preserve_thinking: true
+    thinkingBudgets: { minimal: 128, low: 512, medium: 2048, high: 8192 }
+
+# Compaction policy of the harness profile used here (the agent summarises its history when the context reaches the threshold):
+#   threshold = min(window * ratio, window - maxTokens - headroom)
+#   ratio 0.65, headroom 8192, maxTokens 8192  ->  262144-token window compacts at 170,393 tokens
+compaction:
+  ratio: 0.65
+  headroomTokens: 8192
+  retain: true

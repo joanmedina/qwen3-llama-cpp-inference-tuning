@@ -1,0 +1,20 @@
+{
+  "id": "dual-gpu-vs-igpu-only",
+  "title": "Qwen3.6-35B-A3B on the iGPU alone vs split across the iGPU and an RTX 3080 Ti",
+  "date": "2026-10-25",
+  "setup": "Temporary routers, same configuration (draft-mtp,ngram-mod, spec-draft-n-max 2, repeat-penalty 1.0, KV q8_0, flash-attn, batch 2048/ubatch 1024). iGPU alone: llama.cpp b11721 Vulkan build, device Vulkan0. Dual: llama.cpp b11721 CUDA+Vulkan build, devices Vulkan0,CUDA0 with tensor-split 80,20; the RTX was idle. Two passes, the second in reverse order; mean and (range).",
+  "unit": "tokens/s",
+  "rows": [
+    { "metric": "generation, mean of 4 loads", "igpu_only": [76, 71, 80], "dual": [61, 61, 62] },
+    { "metric": "copy code", "igpu_only": [107, 96, 117], "dual": [85, 85, 86] },
+    { "metric": "rewrite with comments", "igpu_only": [94, 86, 103], "dual": [72, 68, 75] },
+    { "metric": "edit tool call", "igpu_only": [55, 53, 56], "dual": [48, 48, 48] },
+    { "metric": "free reasoning", "igpu_only": [48, 45, 50], "dual": [41, 40, 41] },
+    { "metric": "generation with 32K context", "igpu_only": [36, 36, 36], "dual": [29, 29, 29] },
+    { "metric": "prompt, 8K new tokens", "igpu_only": [958, 844, 1072], "dual": [788, 757, 820] },
+    { "metric": "prompt, 32K new tokens", "igpu_only": [736, 611, 860], "dual": [660, 645, 674] }
+  ],
+  "row_format": "[mean, min, max]",
+  "conclusion": "Splitting across the discrete GPU did not speed up this model: generation was ~20% slower (76 -> 61 tok/s) and prompt processing 10-18% slower (8K: -18%, 32K: -10%). The iGPU alone is faster and leaves the discrete GPU free for other work. The dual configuration is much more repeatable between passes (+-3%) than the iGPU alone (+-15-20%).",
+  "source": "Internal report 39 (2026-10-25), section 2."
+}

@@ -1,0 +1,23 @@
+{
+  "id": "real-usage-profile",
+  "title": "Where the time goes in real agent use of Qwen3.6-35B-A3B",
+  "date": "2026-10-23",
+  "setup": "Read-only analysis of the llama-server log of the production router during normal use by coding agents (461 requests to Qwen3.6, a few days of work). Nothing was changed to take the measurement.",
+  "qwen36": {
+    "requests": 461,
+    "prompt_tokens_total": 9470734,
+    "prompt_tokens_actually_processed": 437302,
+    "prompt_processed_share_pct": 4.6,
+    "prompt_time_min": 13.1,
+    "prompt_speed_tok_s": 558,
+    "generation_time_min": 42.9,
+    "generation_speed_tok_s": 50.9,
+    "generation_time_share_pct": 77,
+    "generated_tokens": 130758,
+    "mtp_acceptance": { "accepted": 79224, "proposed": 102449, "rate": 0.773, "tokens_per_step": 2.55 },
+    "request_size_distribution_generated_tokens": { "lt_50": 23, "50_300": 350, "300_1000": 50, "1000_3000": 38 },
+    "long_generation_share": "The 8% of requests that generate 1,000-3,000 tokens (almost all reasoning) produce 42% of all generated tokens."
+  },
+  "prefix_cache_hit_rate_pct": "95-98",
+  "source": "Internal report 26 (2026-10-23). The 50.9 tok/s average is before the configuration changes of this repository."
+}

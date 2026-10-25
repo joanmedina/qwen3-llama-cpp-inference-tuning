@@ -1,0 +1,28 @@
+{
+  "id": "qwen36-mtp-draft-length",
+  "title": "Qwen3.6-35B-A3B: effect of the MTP draft length (--spec-draft-n-max)",
+  "date": "2026-10-23",
+  "setup": "Temporary llama-server router (build 11721, Vulkan, iGPU only), copy of the production preset with only the draft length changed. Fixed sampling seeds; the model is loaded from scratch for each variant and warmed up before measuring. Weights resided in shared GPU memory (see docs/en/02-methodology.md).",
+  "unit": "tokens/s of generation as reported by the server (timings.predicted_per_second)",
+  "loads": {
+    "copy": "verbatim copy of a ~1,400-character code fragment",
+    "edit": "rewrite the same fragment adding a one-line comment above each function",
+    "prose": "~300-word explanation in prose",
+    "agent": "one agent step with tool definitions and bounded reasoning",
+    "reasoning": "free reasoning, bounded to a few hundred tokens"
+  },
+  "common_loads": ["copy", "edit", "reasoning"],
+  "variants": [
+    { "id": "none", "label": "No speculation", "tg": { "copy": 49.8, "edit": 50.5, "prose": 51.5, "agent": 51.1, "reasoning": 51.0 }, "acceptance": null, "tg_common": 50.4 },
+    { "id": "mtp1", "label": "MTP, 1 draft token", "tg": { "copy": 60.7, "edit": 59.9, "prose": 52.4, "agent": 54.6, "reasoning": 56.2 }, "acceptance": { "copy": 0.95, "edit": 0.92, "prose": 0.65, "agent": 0.76, "reasoning": 0.80 }, "tg_common": 58.9 },
+    { "id": "mtp2", "label": "MTP, 2 draft tokens (chosen)", "tg": { "copy": 65.2, "edit": 63.9, "prose": 49.9, "agent": 55.4, "reasoning": 57.1 }, "acceptance": { "copy": 0.91, "edit": 0.86, "prose": 0.54, "agent": 0.67, "reasoning": 0.71 }, "tg_common": 62.1 },
+    { "id": "mtp3", "label": "MTP, 3 draft tokens (server default)", "tg": { "copy": 68.3, "edit": 66.0, "prose": 44.3, "agent": 53.4, "reasoning": 55.9 }, "acceptance": { "copy": 0.86, "edit": 0.82, "prose": 0.41, "agent": 0.58, "reasoning": 0.63 }, "tg_common": 63.4 },
+    { "id": "mtp4", "label": "MTP, 4 draft tokens", "tg": { "copy": 70.1, "edit": 65.9, "prose": 39.2, "agent": 48.8, "reasoning": 51.1 }, "acceptance": { "copy": 0.83, "edit": 0.75, "prose": 0.32, "agent": 0.45, "reasoning": 0.52 }, "tg_common": 62.4 }
+  ],
+  "derived": {
+    "mtp2_vs_none_five_loads_mean_pct": 15,
+    "mtp2_vs_none_common_loads_pct": 23,
+    "note": "Five-load mean: 58.3 vs 50.8 tok/s (+15%). Common loads (copy, edit, reasoning): 62.1 vs 50.4 tok/s (+23%)."
+  },
+  "source": "Internal report 29 (2026-10-23), section 'Qwen3.6: speculative decoding MTP'."
+}

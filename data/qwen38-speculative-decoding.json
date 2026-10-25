@@ -1,0 +1,28 @@
+{
+  "id": "qwen38-speculative-decoding",
+  "title": "Qwen3.8-27B (dense): speculative decoding configurations",
+  "date": "2026-10-24",
+  "setup": "Temporary router (build 11721, Vulkan, iGPU only), copy of the production section of Qwen3.8-27B (Q4_K_M, 16.8 GB, ctx-size 131072), quick batch: four loads, 1 seed. Weights in shared GPU memory.",
+  "unit": "tokens/s of generation",
+  "loads": ["mean", "edit_tool", "copy", "edit", "reasoning"],
+  "variants": [
+    { "id": "none", "label": "No speculation", "values": [12.6, 12.5, 12.6, 12.6, 12.6] },
+    { "id": "mtp2", "label": "MTP 2", "values": [26.7, 27.0, 28.9, 26.0, 24.9] },
+    { "id": "mtp3", "label": "MTP 3", "values": [31.4, 31.7, 34.8, 32.6, 26.5] },
+    { "id": "mtp2-ngram", "label": "MTP 2 + ngram-mod", "values": [56.9, 31.2, 107.0, 64.4, 25.1] },
+    { "id": "mtp3-ngram", "label": "MTP 3 + ngram-mod", "values": [60.3, 34.7, 111.2, 68.7, 26.4] }
+  ],
+  "repetition_other_seeds": {
+    "seeds": [23, 37],
+    "mean_tok_s": { "mtp2-ngram": 60.6, "mtp3-ngram": 61.8, "mtp4-ngram": 61.3 },
+    "reasoning_acceptance": { "mtp2-ngram": 0.73, "mtp3-ngram": 0.62, "mtp4-ngram": 0.56 },
+    "conclusion": "MTP 2/3/4 + ngram-mod tie within +-2%; the +6% of MTP 3 in the first batch was noise. MTP 2 kept (higher acceptance when reasoning). Mean of the two ngram-mod batches with MTP 2: 58.8 tok/s vs 26.7 without ngram-mod."
+  },
+  "dense_vs_moe": {
+    "qwen38_27b_reasoning_tok_s": 25,
+    "qwen36_35b_a3b_reasoning_tok_s_production": 74,
+    "qwen38_prompt_tok_s": { "median": 186, "ctx_2_30k": 225, "ctx_45_65k": 149 },
+    "qwen36_prompt_tok_s": { "short_context": 720, "ctx_100k": 383, "ctx_150k": 259 }
+  },
+  "source": "Internal report 35 (2026-10-24), sections 4 and 6."
+}
